@@ -141,7 +141,6 @@ public class ReadAvroInput {
 		//job.waitForCompletion(true)的值是true的时候
 		//输出0, 正常退出
 		//否则输出1, 非正常退出
-		System.out.println(job.waitForCompletion(true)?0:1);
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
 	}
 }
