@@ -1,0 +1,12 @@
+{
+"type":"record",
+"name":"UserActionLog",
+"namespace":"com.zhiyou100.schema",
+"fields":[
+	{"name":"userName","type":"string"},
+	{"name":"actionType","type":"string"},
+	{"name":"ipAddress","type":"string"},
+	{"name":"gender","type":"int"},
+	{"name":"provience","type":"string"}
+]
+}
