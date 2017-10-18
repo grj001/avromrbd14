@@ -1,0 +1,9 @@
+{
+"type":"record",
+"name":"SmallFile",
+"namespace":"com.zhiyou100.schema",
+"fields":[
+	{"name":"fileName","type":"string"},
+	{"name":"context","type":"bytes"}
+]
+}

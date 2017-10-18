@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.avro.mapred.AvroKey;
-import org.apache.avro.mapred.AvroOutputFormat;
 import org.apache.avro.mapreduce.AvroJob;
 import org.apache.avro.mapreduce.AvroKeyOutputFormat;
 import org.apache.hadoop.conf.Configuration;
@@ -22,7 +21,6 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.htrace.fasterxml.jackson.annotation.JsonFormat.Value;
 
 import com.zhiyou100.schema.UserActionLog;
 
@@ -63,7 +61,11 @@ public class ReduceJoin {
 	}
 	
 	//ReduceJoinMap
-	public static class ReduceJoinMap extends Mapper<LongWritable, Text, Text, ValueWithFlag>{
+	public static class ReduceJoinMap extends Mapper<
+	
+		LongWritable, Text, 
+		Text, ValueWithFlag>{
+		
 		private FileSplit inputSplit;
 		private String fileName;
 		private String[] infos;
@@ -73,32 +75,45 @@ public class ReduceJoin {
 		@Override
 		protected void setup(Mapper<LongWritable, Text, Text, ValueWithFlag>.Context context)
 				throws IOException, InterruptedException {
-			System.out.println("** 进入Map Setop()方法");
+			
 			inputSplit = (FileSplit) context.getInputSplit();
+			
+			
 			if(inputSplit.getPath().toString().contains("user-logs-large.txt")){
 				fileName = "userLogsLarge";
 			}else if(inputSplit.getPath().toString().contains("user_info.txt")){
 				fileName = "userinfo";
 			}
-			System.out.println("获取到文件名称:\t"+fileName);
+			
 		}
 		
 		@Override
-		protected void map(LongWritable key, Text value,
-				Mapper<LongWritable, Text, Text, ValueWithFlag>.Context context)
+		protected void map(
+				LongWritable key, Text value,
+				
+				Mapper<
+				LongWritable, Text, 
+				Text, ValueWithFlag>.Context context)
+		
 				throws IOException, InterruptedException {
-			System.out.println("** 进入Map map()方法:\t输入为:\t"+key+"---"+value);
-			outValue.setFlag(fileName);
+			
+			
 			infos = value.toString().split("\\s");
+			
 			if(fileName.equals("userLogsLarge")){
+				
 				outKey.set(infos[0]);
 				outValue.setValue(infos[1]+"\t"+infos[2]);
+				
 			}else if(fileName.equals("userinfo")){
+				
 				outKey.set(infos[0]); // 0:mike 1:man 2:henan
 				outValue.setValue(infos[1]+"\t"+infos[2]); // 0:mike 1:man 2:henan
+				
 			}
+			
+			outValue.setFlag(fileName);
 			context.write(outKey, outValue);
-			System.out.println("** 即将退出Map map()方法:\t输出为:\t"+outKey.toString()+"---"+outValue);
 		}
 	}
 	
@@ -153,7 +168,7 @@ public class ReduceJoin {
 			}
 			
 			
-			//对两组的数据进行笛卡尔乘积
+			//对应同一个key:用户名	对两组的数据进行笛卡尔乘积
 			for(String userLogsLarge : userLogsLargeList){
 				
 				for(String userInfo : userInfoList){
@@ -219,13 +234,6 @@ public class ReduceJoin {
 		
 		//设置输出key的schema
 		AvroJob.setOutputKeySchema(job, UserActionLog.SCHEMA$);
-		
-		
-		
-		
-		
-		
-		
 		
 		
 		
