@@ -103,43 +103,48 @@ public class AvroMergeSmallFile {
 	
 	
 	
-	
-	
-	
-	//读取daavro文件
+	//读取到avro文件
 	public void readMergedFile(String avroFile) 
 			throws IOException{
 		
 		DatumReader<SmallFile> reader = 
-				new SpecificDatumReader<>();
+				new SpecificDatumReader<SmallFile>();
 		
 		DataFileReader<SmallFile> fileReader = 
-				new DataFileReader<>(
-						new File(avroFile), reader);
+				new DataFileReader<SmallFile>
+					(new File(avroFile), reader);
 		
 		SmallFile smallFile = null;
 		
 		while(fileReader.hasNext()){
-			
+			 
 			smallFile = fileReader.next();
 			
 			System.out.println(
-					"文件名:\t"
-							+smallFile.getFileName());
+						"文件名:\t"
+						+smallFile.getFileName());
 			
-			/*System.out.println(
-					"文本内容:\t"+new String(
-							smallFile.getContext().array()));*/
-			//对照md5
 			System.out.println(
-					"文件md5:\t"
-							+DigestUtils.md5Hex(
-									smallFile
-									.getContext()
-									.array()));
+						"文本内容:\t"
+						+new String(
+								smallFile
+								.getContext().array())
+					);
+			
+			System.out.println(
+						"文件md5:\t"
+						+DigestUtils.md5Hex(
+								smallFile
+								.getContext()
+								.array()
+								)
+					);
 			
 		}
 	}
+	
+	
+	
 	
 	
 	public static void main(String[] args) throws Exception{
@@ -148,17 +153,14 @@ public class AvroMergeSmallFile {
 		AvroMergeSmallFile avroMergeSmallFile = 
 				new AvroMergeSmallFile();
 		
-		avroMergeSmallFile.addInputFileDir(
-				"C:\\Users\\Administrator\\Desktop/reversetext"
-				);
+		avroMergeSmallFile.addInputFileDir("D:\\test\\reversetext");
 		
-		avroMergeSmallFile.mergeFile(""
-				+ "C:\\Users\\Administrator\\Desktop/reversetext1.avro"
+		avroMergeSmallFile.mergeFile(
+				"D:\\test\\reversetext1.avro"
 				);
 		
 		avroMergeSmallFile.readMergedFile(
-				"C:\\Users\\Administrator"
-				+ "\\Desktop/reversetext1.avro"
+				"D:\\test\\reversetext1.avro"
 				);
 	}
 	
