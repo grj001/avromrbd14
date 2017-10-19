@@ -30,13 +30,13 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import com.zhiyou100.schema.SmallFile;
 
 //计算合并文件后的大avro文件的词频
-public class AvroFile {
+public class AvroFileMR {
 
 	//读取avro文件, 没读取一条记录,
 	//其实是一个小文件, 对其进行wordCount解析
 	//并以(单词, 1)
 	//的形式发送到reduce
-	public static class AvroFileMap 
+	public static class AvroFileMRMap 
 	extends Mapper<
 	AvroKey<SmallFile>, NullWritable, 
 	Text, IntWritable>{
@@ -74,7 +74,7 @@ public class AvroFile {
 	//把wordCount的计算结果, 以word_content.avro的
 	//模式
 	//输出成avro文件
-	public static class AvroFileReduce 
+	public static class AvroFileMRReduce 
 	extends Reducer<
 	Text, IntWritable, 
 	AvroKey<GenericRecord>, NullWritable>{
@@ -177,11 +177,11 @@ public class AvroFile {
 				new Configuration();
 		Job job = Job.getInstance(
 				conf, "计算合并文件后的大avro文件的词频");
-		job.setJarByClass(AvroFile.class);
+		job.setJarByClass(AvroFileMR.class);
 		
 		
-		job.setMapperClass(AvroFileMap.class);
-		job.setReducerClass(AvroFileReduce.class);
+		job.setMapperClass(AvroFileMRMap.class);
+		job.setReducerClass(AvroFileMRReduce.class);
 		
 		
 		job.setMapOutputKeyClass(Text.class);
