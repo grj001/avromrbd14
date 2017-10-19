@@ -1,0 +1,9 @@
+{
+"type":"record",
+"name":"WordCount",
+"namespace":"com.zhiyou100.schema",
+"fields":[
+	{"name":"word","type":"string"},
+	{"name":"count","type":"int"}
+]
+}

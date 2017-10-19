@@ -1,14 +1,19 @@
 package com.zhiyou100.mr.avroFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.avro.Schema;
+import org.apache.avro.file.DataFileReader;
 import org.apache.avro.file.DataFileWriter;
+import org.apache.avro.io.DatumReader;
 import org.apache.avro.io.DatumWriter;
+import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.avro.specific.SpecificDatumWriter;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.fs.FileUtil;
 
@@ -44,10 +49,12 @@ public class AvroMergeSmallFile {
 	
 	
 	//把inputFilePaths中的所有文件合并到一个avro文件中
-	public void mergeFile(String outputPath) throws Exception{
+	public void mergeFile(String outputPath) 
+			throws Exception{
 		
 		//创建DatumWriter<SmallFile>对象 	writer
-		DatumWriter<SmallFile> writer =  new SpecificDatumWriter<SmallFile>();
+		DatumWriter<SmallFile> writer =  
+				new SpecificDatumWriter<SmallFile>();
 		
 		//创建DataFileWriter<SmallFile>对象    fileWriter
 		DataFileWriter<SmallFile> fileWriter = 
@@ -84,12 +91,54 @@ public class AvroMergeSmallFile {
 			//将oneSmallFile对象写入到文件中去
 			fileWriter.append(oneSmallFile);
 			System.out.println("写入"+inputFile.getAbsolutePath()
-					+"成功");
+					+"成功"
+					//这个方法计算一个数据的md5值
+					+DigestUtils.md5Hex(content));
 			
 		}
 		
 		fileWriter.flush();
 		fileWriter.close();
+	}
+	
+	
+	
+	
+	
+	
+	//读取daavro文件
+	public void readMergedFile(String avroFile) 
+			throws IOException{
+		
+		DatumReader<SmallFile> reader = 
+				new SpecificDatumReader<>();
+		
+		DataFileReader<SmallFile> fileReader = 
+				new DataFileReader<>(
+						new File(avroFile), reader);
+		
+		SmallFile smallFile = null;
+		
+		while(fileReader.hasNext()){
+			
+			smallFile = fileReader.next();
+			
+			System.out.println(
+					"文件名:\t"
+							+smallFile.getFileName());
+			
+			/*System.out.println(
+					"文本内容:\t"+new String(
+							smallFile.getContext().array()));*/
+			//对照md5
+			System.out.println(
+					"文件md5:\t"
+							+DigestUtils.md5Hex(
+									smallFile
+									.getContext()
+									.array()));
+			
+		}
 	}
 	
 	
@@ -107,6 +156,11 @@ public class AvroMergeSmallFile {
 				+ "C:\\Users\\Administrator\\Desktop/reversetext1.avro"
 				);
 		
+		avroMergeSmallFile.readMergedFile(
+				"C:\\Users\\Administrator"
+				+ "\\Desktop/reversetext1.avro"
+				);
 	}
+	
 	
 }
